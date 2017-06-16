@@ -21,7 +21,7 @@ class Grafo{
 
 public:
 
-    int mar[];
+    int mar[6];
     Grafo(int);
 
      // ~ Falta destructor
@@ -80,7 +80,7 @@ public:
 	if(Vacia())
 	{
 		frente(nuevo);
-		printf("primer nodo: %i \n", nuevo->dato());
+		//printf("primer nodo: %i \n", nuevo->dato());
 		s++;
 	}
 
@@ -88,10 +88,9 @@ public:
 	{
  		nuevo->apuntador(nuevo, nodeFrente());
 		frente(nuevo);
-		printf("Nuevo nodo en else: %i \n", nuevo->dato());
+		//printf("Nuevo nodo en else: %i \n", nuevo->dato());
 		s++;
 	}
-	printf("Termina push\n");
 }
 
 
@@ -183,47 +182,52 @@ void bicola::mostrar()
 
 bool Grafo::buscarMarcado(int x){
 
-    for(int i = 0; i <= m_max; i++){
+    for(int i = 0; i < 6; i++){
         if(mar[i] == x){
+                //printf("El numero ya estaba marcado: %i \n", x);
             return true;
         }
     }
+    //printf("El numero no estaba marcado: %i\n", x);
     return false;
 }
 
 bool Grafo::Vecindad(int x, Grafo &g){
 
     for(int j = 1; j <= n();){
+            //printf("%i se busca que sea vecino\n", j);
         if(g.v[f(x, j)] && !buscarMarcado(j)){
                 vecino = j;
+                //printf("%i si es vecino:\n", vecino);
             return true;
         }else{
         j++;
         }
     }
-
+    //printf("%i no tiene vecinos disponibles");
     return false;
 }
 
 void Grafo::DeepFirstSearch(int source, int target, Grafo &g){
         bicola bi;
-    printf("Comienza\n");
         bi.Push(source);
         int j = 0;
         int u;
 
         while(!bi.Vacia()){
             u = bi.nodeFrente()->dato();
-            //printf("dato: %i\n", bi.nodeFrente()->dato());
-            mar[j] = bi.nodeFrente() ->dato();
+           //printf("dato: %i\n", u);
+            //mar[j] = bi.nodeFrente() ->dato();
+            mar[j] = u;
             j++;
             if(Vecindad(u, g) && !buscarMarcado(vecino)){
                bi.Push(vecino);
+               //printf("Vecino: %i \n", vecino);
                 if(vecino == target){
                     return bi.mostrar();
                 }
                }else{
-               printf("el numero que salio fue: %i \n", bi.Pop());
+                bi.Pop();
                }
 
         }
