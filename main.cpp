@@ -12,7 +12,7 @@ class Grafo{
     int _m;
     int m_max;
     int vecino;
-
+    int vecino2;
 
 
     friend void print(Grafo &);
@@ -22,6 +22,7 @@ class Grafo{
 public:
 
     int mar[6];
+    int Marcado[10];
     Grafo(int);
 
      // ~ Falta destructor
@@ -32,8 +33,11 @@ public:
       int n() const;
 
       void DeepFirstSearch(int, int, Grafo &);
+      void CaminoMasCorto(int, int, Grafo &);
       bool buscarMarcado(int);
+      bool buscarMarcado2(int);
       bool Vecindad(int, Grafo &);
+      bool Vecindad2(int, Grafo &);
 };
 
  void print(Grafo &);
@@ -72,6 +76,8 @@ public:
 	node *nodeFrente(){return _frente;}
 
  };
+
+
 
  void bicola::Push(int x)
 {
@@ -171,7 +177,6 @@ void bicola::mostrar()
         void print(Grafo &g){
 
             for(int i = 2; i <= g._n; i++){
-                    g.v[i] = false;
                 for(int j = 1; j < i; j++){
                     printf("[%i:%i] %i\n", i, j, g.v[g.f(i,j)]);
                     //printf("[%i:%i] %i\n", i, j, g.edge(i,j));
@@ -184,27 +189,45 @@ bool Grafo::buscarMarcado(int x){
 
     for(int i = 0; i < 6; i++){
         if(mar[i] == x){
-                //printf("El numero ya estaba marcado: %i \n", x);
             return true;
         }
     }
-    //printf("El numero no estaba marcado: %i\n", x);
+    return false;
+}
+
+bool Grafo::buscarMarcado2(int x){
+
+    for(int i = 0; i < 10; i++){
+        if(Marcado[i] == x){
+            return true;
+        }
+    }
     return false;
 }
 
 bool Grafo::Vecindad(int x, Grafo &g){
 
     for(int j = 1; j <= n();){
-            //printf("%i se busca que sea vecino\n", j);
         if(g.v[f(x, j)] && !buscarMarcado(j)){
                 vecino = j;
-                //printf("%i si es vecino:\n", vecino);
             return true;
         }else{
         j++;
         }
     }
-    //printf("%i no tiene vecinos disponibles");
+    return false;
+}
+
+bool Grafo::Vecindad2(int x, Grafo &g){
+
+    for(int j = 1; j <= n();){
+        if(g.v[f(x, j)] && !buscarMarcado2(j)){
+                vecino2 = j;
+            return true;
+        }else{
+        j++;
+        }
+    }
     return false;
 }
 
@@ -216,13 +239,10 @@ void Grafo::DeepFirstSearch(int source, int target, Grafo &g){
 
         while(!bi.Vacia()){
             u = bi.nodeFrente()->dato();
-           //printf("dato: %i\n", u);
-            //mar[j] = bi.nodeFrente() ->dato();
             mar[j] = u;
             j++;
             if(Vecindad(u, g) && !buscarMarcado(vecino)){
                bi.Push(vecino);
-               //printf("Vecino: %i \n", vecino);
                 if(vecino == target){
                     return bi.mostrar();
                 }
@@ -233,6 +253,34 @@ void Grafo::DeepFirstSearch(int source, int target, Grafo &g){
         }
 
         return bi.mostrar();
+}
+
+void Grafo::CaminoMasCorto(int source, int target, Grafo &g){
+
+        int j = 0;
+        int u;
+
+        bicola Sp;
+        Sp.Push(source);
+        Marcado[j]= source;
+        Grafo E(m_max);
+
+        while(!Sp.Vacia()){
+
+            u = Sp.Pop();
+            for(Vecindad2(u, g); !Vecindad2(u, g) && !buscarMarcado(Marcado[j]); Vecindad2(u, g)){
+                E.edge(u, vecino2) = true;
+                if(vecino2 == target){
+                    return E.DeepFirstSearch(source, target, g);
+                }
+                Sp.Push(vecino2);
+                j++;
+                Marcado[j] = vecino2;
+            }
+        }
+
+    return E.DeepFirstSearch(source, target, g);
+
 }
 
 int main(){
@@ -255,13 +303,12 @@ int main(){
     g.edge(6, 5) = true;
 
     print(g);
-
-    printf("comienza Busqueda a profundidad\n");
     printf("Source: \n");
     scanf("%i", &sour);
     printf("Target: \n");
     scanf("%i", &tar);
-    g.DeepFirstSearch(sour, tar, g);
+    printf("Camino mas corto: \n");
+    g.CaminoMasCorto(sour, tar, g);
 
     return 0;
 }
